@@ -1,0 +1,35 @@
+<!--index.wxml-->
+
+<import src="/wxSearch/wxSearch.wxml"/>
+<view class="wxSearch-section">
+  <view class="wxSearch-pancel">
+    <input bindinput="wxSearchInput" bindfocus="wxSerchFocus" value="{{wxSearchData.value}}" bindblur="wxSearchBlur" class="wxSearch-input" placeholder="搜索" />
+    <button class="wxSearch-button" bindtap="wxSearchFn" size="mini" plain="true">搜索</button>
+  </view>
+</view>
+
+<scroll-view scroll-y="true" class="container">
+	<block wx:for="{{searchMusic}}" wx:for-item="song">
+		<view class="block" bindtap="playTap" data-id="{{song.id}}">
+			<view class="left">
+				<image src="{{song.album.picAddr}}" mode="aspectFill"/>
+			</view>
+			<view class="right">
+				<view class="content">
+					<view>
+						<text class="song-name">{{song.name}}</text>	
+					</view>
+					<view>
+						<text class="song-artist">{{song.artist}} - {{song.album.name}}</text>
+					</view>
+				</view>
+				<view class="play">
+<button type="default" size="{{defaultSize}}" loading="{{loading}}" plain="{{plain}}"
+		disabled="{{disabled}}" bindtap="bindRecordTap" hover-class="other-button-hover"> play </button>
+				</view>
+			</view>
+		</view>	
+	</block>
+</scroll-view>
+
+<template is="wxSearch" data="{{wxSearchData}}"/>

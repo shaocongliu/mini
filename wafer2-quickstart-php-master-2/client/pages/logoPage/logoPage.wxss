@@ -1,0 +1,12 @@
+/* pages/page1/page1.wxss */
+.section__ctn{
+    text-align: center;
+}
+
+.upper_logo {
+  margin-bottom: 10px;
+}
+
+.lower_button {
+  margin-top: 100px;
+}

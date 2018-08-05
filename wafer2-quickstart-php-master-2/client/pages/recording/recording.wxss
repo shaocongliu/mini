@@ -1,0 +1,104 @@
+/* pages/recording/recording.wxss */
+
+.cover {
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1;
+}
+
+.play {
+  width: 100rpx;
+  height: 100rpx;
+  margin-top: 2vh;
+}
+
+.lyric-wrapper {
+  width: 100%;
+  margin: 0 auto;
+  overflow: hidden;
+  text-align: center;
+  height: 100vh;
+}
+
+.tab {
+  
+  width: 90vw;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  
+}
+
+.cover-background {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  top: 30vh;
+  left: 5vw;
+  background: rgba(0, 0, 0, 0.6);
+  width: 90vw;
+  height: 20vh;
+  border-radius: 20rpx;
+  z-index: 2;
+}
+
+.background {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid black;
+  border-radius: 20rpx;
+  width: 90vw;
+  height: 20vh;
+  bottom: 2vh;
+  left: 5vw;
+  z-index: 2;
+}
+
+.positive {
+  margin-top: 2vh;
+  color: white;
+  background: rgb(48, 145, 242);
+}
+
+.negative {
+  margin-top: 2vh;
+  background: grey;
+  color: white;
+}
+
+.text {
+  line-height: 32px;
+  color: rgba(0, 0, 0, 1);
+  font-size: small;
+}
+
+.own {
+  color: rgba(156, 0, 0, 0.800);
+  font-size: medium;
+}
+
+.current {
+  line-height: 48px;
+  font-size: x-large;
+}
+
+.cover-title {
+  margin-top: 2vh;
+  color: white;
+  font-size: x-large;
+}
+
+.cover-content {
+  margin-top: 2vh;
+  color: white;
+  font-size: medium;
+}

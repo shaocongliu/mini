@@ -1,0 +1,12 @@
+<!--pages/page1/page1.wxml-->
+<view class="container">
+    <image style="width: 200px; height: 200px; background-color: #eeeeee;" mode="{{item.mode}}" src="../../img/logo.png"> </image>
+    <view class="section__ctn">
+        <text>你接我唱</text>
+    </view>
+
+    <view class="lower_button">
+    <button bindtap="bindViewTap" type="default" size="{{primarySize}}" loading="{{loading}}" plain="{{plain}}" disabled="{{disabled}}"> 发起挑战 </button>
+    </view>
+
+</view>
