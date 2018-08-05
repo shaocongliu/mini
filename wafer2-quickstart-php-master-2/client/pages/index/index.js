@@ -37,7 +37,7 @@ Page({
       }
     } else {
       // 在没有 open-type=getUserInfo 版本的兼容处理
-      wx.bindGetUserInfo({
+      this.bindGetUserInfo({
         success: res => {
           app.globalData.userInfo = res.userInfo
           this.setData({
@@ -73,7 +73,6 @@ Page({
         success: res => {
           this.setData({ userInfo: res, logged: true })
           util.showSuccess('登录成功1')
-          app.globalData.userInfo = res
         },
         fail: err => {
           console.error(err)
@@ -85,7 +84,6 @@ Page({
         success: res => {
           this.setData({ userInfo: res, logged: true })
           util.showSuccess('登录成功2')
-          app.globalData.userInfo = res
         },
         fail: err => {
           console.error(err)

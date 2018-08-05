@@ -54,13 +54,7 @@ Page({
 
     wx.setStorageSync('ids', idsMap);
   },
-
-  bindViewTap: function () {
-    wx.navigateTo({
-      url: '../搜索/搜索'
-    })
-  },
-
+  
 wxSearchFn: function(e) {
   searchKey = this
   WxSearch.wxSearchAddHisKey(searchKey);
