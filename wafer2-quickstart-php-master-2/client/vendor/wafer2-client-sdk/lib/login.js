@@ -22,7 +22,7 @@ function getWxLoginResult (cb) {
                         userInfo: userResult.userInfo
                     })
                 },
-                fail (userError) {
+                fail (userError) { 
                     cb(new Error('获取微信用户信息失败，请检查网络状态'), null)
                 }
             });

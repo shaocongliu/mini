@@ -21,8 +21,6 @@ Page({
 
 
   onLoad: function () {
-
-
     if (app.globalData.userInfo) {
       this.setData({
         userInfo: app.globalData.userInfo,
@@ -75,7 +73,7 @@ Page({
         success: res => {
           this.setData({ userInfo: res, logged: true })
           util.showSuccess('登录成功1')
-          app.globalData.userInfo = userInfo
+          app.globalData.userInfo = res
         },
         fail: err => {
           console.error(err)
@@ -87,7 +85,7 @@ Page({
         success: res => {
           this.setData({ userInfo: res, logged: true })
           util.showSuccess('登录成功2')
-          app.globalData.userInfo = userInfo
+          app.globalData.userInfo = res
         },
         fail: err => {
           console.error(err)
