@@ -2,10 +2,25 @@ var WxSearch = require('../../wxSearch/wxSearch.js');
 var searchKey;
 var lastSearchKey;
 var songList = require('../../data/searchData.js').songs;
+var songData;
+
+
+function toUnicode(theString) {
+  var unicodeString = '';
+  for (var i = 0; i < theString.length; i++) {
+    var theUnicode = theString.charCodeAt(i).toString(16).toUpperCase();
+    while (theUnicode.length < 4) {
+      theUnicode = '0' + theUnicode;
+    }
+    theUnicode = '\\u' + theUnicode;
+    unicodeString += theUnicode;
+  }
+  return unicodeString;
+}
+
 
 Page({
   data: {
-
     wxSearchData: {
       view: {
         isShow: true
@@ -24,15 +39,24 @@ Page({
     this.setData({
       key: lastSearchKey
     });
-    //search for the songs
-    // songList = Object.keys(songList);
-    // var len = songList.length;
-    // var resultList = [];
-    // for (var i=0; i < len; i++) {
-    //   if (songList[i].includes(lastSearchKey)) {
-    //     resultList.add(songList[i])
-    //   }
-    // }
+
+    wx.request({
+      url: 'https://www.jemizhang.cn/weapp/getonesong',
+      data: {
+        'song_name': lastSearchKey
+      },
+      header: {
+        'content-type': 'application/json'
+      },
+      success: function (res) {
+        songData = res
+        this.setData({
+          songData: res
+        });
+      }
+    })
+
+
 
     var rs = [],
       idsMap = {},
@@ -76,11 +100,12 @@ Page({
   wxSearchFn: function (e) {
     searchKey = this
     WxSearch.wxSearchAddHisKey(searchKey);
+  
     wx.navigateTo({
       url: '../search/search'
     })
-
   },
+
   wxSearchInput: function (e) {
     var that = this
     WxSearch.wxSearchInput(e, that);

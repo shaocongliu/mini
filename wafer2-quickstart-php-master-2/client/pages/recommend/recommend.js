@@ -58,12 +58,11 @@ wxSearchFn: function(e) {
   searchKey = this
   WxSearch.wxSearchAddHisKey(searchKey);
   wx.setStorageSync('lastSearchKey', searchKey.data.wxSearchData.value) 
-
   wx.navigateTo({
     url: '../search/search'
   })
-
 },
+
 wxSearchInput: function(e) {
   var that = this
   WxSearch.wxSearchInput(e, that);

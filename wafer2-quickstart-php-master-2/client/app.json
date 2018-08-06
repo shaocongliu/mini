@@ -4,8 +4,7 @@
     "pages/logoPage/logoPage",
     "pages/recommend/recommend",
     "pages/search/search",
-    "pages/recording/recording",
-    "pages/share/share"
+    "pages/recording/recording"
   ],
   "window": {
     "backgroundTextStyle": "light",
