@@ -102,7 +102,7 @@ Page({
   wxSearchFn: function (e) {
     searchKey = this
     WxSearch.wxSearchAddHisKey(searchKey);
-  
+    wx.setStorageSync('lastSearchKey', searchKey.data.wxSearchData.value)
     wx.navigateTo({
       url: '../search/search'
     })
