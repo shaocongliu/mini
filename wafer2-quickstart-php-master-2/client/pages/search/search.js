@@ -50,14 +50,12 @@ Page({
         'content-type': 'application/json'
       },
       success: function (res) {
-        songData = res
-        this.setData({
-          songData: res
-        });
+        app.globalData.songInfo = res
       }
     })
-
-    app.globalData.songInfo = songData;
+    
+    console.log("--------------------------")
+    console.log(app.globalData.songInfo)
 
     var rs = [],
       idsMap = {},
@@ -106,7 +104,6 @@ Page({
       url: '../search/search'
     })
   },
-
   wxSearchInput: function (e) {
     var that = this
     WxSearch.wxSearchInput(e, that);
