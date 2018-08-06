@@ -288,12 +288,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           var result = timeExp.exec(line);
           if (result) {
             var txt = line.replace(timeExp, '').trim();
-            if (txt) {
+           // if (txt) {
               this.lines.push({
                 time: result[1] * 60 * 1000 + result[2] * 1000 + (result[3] || 0) * 10,
                 txt: txt
               });
-            }
+           // }
           }
         }
 

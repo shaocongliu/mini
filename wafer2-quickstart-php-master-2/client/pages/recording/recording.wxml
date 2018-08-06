@@ -1,6 +1,6 @@
 <!--pages/recording/recording.wxml-->
 
-<view style="background-image: url('../../img/album.jpg'); " class='container'></view>
+<view style="background-image: url({{albumUrl}}); " class='container'></view>
 <view class='cover' wx:if='{{canPlay}}'>
   <view class='cover-background'>
     <text class='cover-title'>接唱已经完成！</text>

@@ -137,7 +137,7 @@
   width: 623rpx;
   height: auto;
   align-items: center;
-  justify-content: space-evenly;
+  justify-content: space-around;
 }
 
 .sing-adjust {

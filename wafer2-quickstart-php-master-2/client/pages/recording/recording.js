@@ -10,11 +10,13 @@ const REQUIRE_USER = "Senduserinfo"
 const REQUIRE_SONG = "Getonesong"
 const INIT_SONG = "Createsingsong"
 const REQUIRE_STATE = "Getsongstate"
-const REQUIRE_FOLLOW = "xxx"
+const REQUIRE_FOLLOW = "Getfollowsong"
 const CHANGE_STATE = "Changesongstate"
 const REQUIRE_DONE = "Getdonesong"
 const UPLOAD_FRAME = "Sendsong"
 const UPLOAD_SONG = "Upload"
+const START_SINGING = "Startsinging"
+const REQUIRE_CREATION = "Createsingsong"
 
 
 const options = {
@@ -44,9 +46,11 @@ Page({
     isPlaying: false,
     recorderImage: '../../img/record.png',
     playImage: '../../img/playdone.png',
+    albumUrl: "",
     songIndex: 0,
     songRange: [],
     rangeDetail: [],
+    songInfo: [],
     lyrics: null,
     toLineNum: 0,
     startLine: -1,
@@ -57,6 +61,7 @@ Page({
     frameCount: 0,
     creationStatus: 1,
     timingLast: 0,
+    singPiece: 0,
     tempRecordPath: "",
     tempSongPath: "",
     musicId: "",
@@ -171,7 +176,7 @@ Page({
    * 向服务器获得歌曲伴奏、歌词数据与分段信息
    */
   requireSong: function() {
-    var currLyrcis = new Lyric(Resources.sampleLyrics())
+    /*var currLyrcis = new Lyric(Resources.sampleLyrics())
     let t = this
     wx.request({
       url: SERVER_URL + REQUIRE_SONG,
@@ -179,7 +184,7 @@ Page({
         songId: this.data.musicId,
       },
       success: function(res) {
-        
+
         let range = res.data.lyrics_pieces_info
 
         t.setData({
@@ -202,10 +207,65 @@ Page({
           songRange: [2, 3, 4]
         })
       }
+    })*/
+    let t = this
+    let lyricPath = ""
+    t.setData({
+      rangeDetail: JSON.parse(t.data.songInfo.lyric_info)
     })
+    this.setData({
+      tempSongPath: t.data.songInfo.song_url,
+      songRange: [t.data.songInfo.song_piece_num],
+      albumUrl: t.data.songInfo.img_url,
+      startLine: parseInt(t.data.rangeDetail[1]) + 1,
+      endLine: parseInt(t.data.rangeDetail[3]),
+      startTime: parseFloat(t.data.rangeDetail[0]),
+      endTime: parseFloat(t.data.rangeDetail[2]),
+    })
+
+
+    console.log(this.data.songInfo)
+    wx.request({
+      url: this.data.songInfo.lyric_url,
+      success: function(res) {
+        t.setData({
+          lyrics: new Lyric(res.data)
+        })
+      }
+    })
+    /*wx.downloadFile({
+      url: this.data.songInfo.lyric_url,
+      success: function(res) {
+        console.log(res.tempFilePath)
+        lyricPath = res.tempFilePath
+        let content = ""
+        wx.saveFile({
+          tempFilePath: lyricPath,
+          success: function(res) {
+            lyricPath = res.savedFilePath
+            wx.request({
+              url: lyricPath,
+              success: function(res) {
+                console.log("lyrics=>" + res.data)
+                content = res.data
+                t.setData({
+                  lyrics: new Lyric(content)
+                })
+                console.log(t.data)
+              }
+            })
+          }
+        })
+
+
+
+      }
+
+    })*/
+
   },
   checkCreationStatus: function(data) {
-    console.log("data=>"+data)
+    console.log("data=>" + data)
     let isDone = data.isdone //是否完成
     let isSinging = data.singing //正在唱
     let winnerId = data.who
@@ -271,10 +331,20 @@ Page({
 
   },
   uploadPieces: function() {
+    let t = this
     wx.uploadFile({
       url: SERVER_URL + UPLOAD_SONG,
       filePath: this.data.tempRecordPath,
-      name: this.data.creationId,
+      file: this.data.creationId,
+      name: "file",
+      success: function(res) {
+        let temp = JSON.parse(res.data)
+        console.log(temp)
+        t.setData({
+          tempRecordPath: temp.data.imgUrl
+        })
+        
+      }
     })
   },
   /**
@@ -336,6 +406,7 @@ Page({
         tempRecordPath: res.tempFilePath,
       })
       this.uploadPieces()
+      this.stopSing()
     })
     /* Recorder.onFrameRecorded((res) => {
 
@@ -396,41 +467,83 @@ Page({
    * 初始化唱歌数据
    */
   initSing: function() {
-    let num = this.data.songRange[this.data.songIndex],
-      line = Resources.sampleBelongLine(),
-      time = Resources.smapleBelongTime()
-    let t = this
-    wx.request({
-      url: SERVER_URL + INIT_SONG,
-      data: {
-        openid: t.data.openId,
-        songid: t.data.musicId,
-        piece: num
-      },
-      success: function(res) {
-        let reuslt = res.data.reuslt
-        if (result == "success") {
-          t.setData({
-            creationId: res.data.createflowid
-          })
-        } else {
+    console.log("startLine" + this.data.startLine)
+    console.log("endLine" + this.data.endLine)
 
+    // let num = this.data.songRange[this.data.songIndex],
+    //   line = Resources.sampleBelongLine(),
+    //   time = Resources.smapleBelongTime()
+    // let t = this
+    // wx.request({
+    //   url: SERVER_URL + INIT_SONG,
+    //   data: {
+    //     openid: t.data.openId,
+    //     songid: t.data.musicId,
+    //     piece: num
+    //   },
+    //   success: function(res) {
+    //     let reuslt = res.data.reuslt
+    //     if (result == "success") {
+    //       t.setData({
+    //         creationId: res.data.createflowid
+    //       })
+    //     } else {
+
+    //     }
+    //   }
+    // })
+    // t.setData({
+    //   startLine: line[0],
+    //   endLine: line[1],
+    //   startTime: time[0],
+    //   endTime: time[1],
+    //   creationId: 444
+    // })
+    let t = this
+    if (this.data.creationId == "" || this.data.isStarting) {
+      console.log(t.data.songInfo.song_id + t.data.openId + t.data.songInfo.song_piece_num)
+      wx.request({
+
+        url: SERVER_URL + REQUIRE_CREATION,
+        songid: t.data.songInfo.song_id,
+        openid: t.data.openId,
+        piece_num: t.data.songInfo.song_piece_num,
+        success: function(res) {
+          if (res.data.result == "success") {
+            t.setData({
+              creationId: res.data.crateflowid
+            })
+          }
         }
-      }
-    })
-    t.setData({
-      startLine: line[0],
-      endLine: line[1],
-      startTime: time[0],
-      endTime: time[1],
-      creationId: 444
-    })
+      })
+    }
     SongPlayer.src = this.data.tempSongPath
+    if (this.data.startTime > 5) {
+      SongPlayer.seek(this.data.startTime - 5)
+    }
+
+
   },
   /**
    * 开始唱歌
    */
   startSing: function() {
+    let t = this
+    wx.request({
+      url: SERVER_URL + START_SINGING,
+      singsongid: t.data.creationId,
+      openid: t.data.openId,
+      success: function(res) {
+        if (res.data.result == "success") {
+
+        } else if (res.data.result == "singing") {
+          let who = res.data.who
+        } else if (res.data.result == "done") {
+          let url = res.data.url
+
+        }
+      }
+    })
     this.resetLyrics()
     this.resetAllState()
     this.setData({
@@ -502,6 +615,19 @@ Page({
    * 点击保存按钮的回调函数
    */
   onClickSave: function(e) {
+    let t = this
+    wx.request({
+      url: SERVER_URL + CHANGE_STATE,
+      data: {
+        singsongid: t.data.creationId,
+        openid: t.data.openId,
+        piece_num: t.data.singPiece,
+        song_url: t.data.tempRecordPath
+      },
+      success:function(res){
+        console.log(res)
+      }
+    })
     this.stopSing()
     this.stopListen()
     wx.navigateTo({
@@ -513,12 +639,6 @@ Page({
    * 点击重唱按钮的回调函数
    */
   onClickAgain: function(e) {
-    wx.request({
-      url: '',
-      data: {
-        action: 1
-      }
-    })
     this.stopSing()
     this.startSing()
   },
@@ -572,36 +692,38 @@ Page({
     if (App.globalData.userInfo) {
       this.setData({
         userInfo: App.globalData.userInfo,
+        openId: App.globalData.userInfo.openId,
         hasUserInfo: true
       })
       this.initDevice()
-      //状态码
-      let status = options.status
-      status = 0
-      options.mId = 123
-      options.cId = 444
-      if (status == 0) {
+      let cId = options.cId
+      if (App.globalData.songInfo.data) {
         //发起流程
-        let mId = options.mId
         this.setData({
-          musicId: mId
+          songInfo: App.globalData.songInfo.data,
+          musicId: App.globalData.songInfo.data.song_id
         })
         this.launchCreation()
-      } else if (status == 1) {
+      } else if (cId) {
         //接唱流程
-        let cId = options.cId
         this.setData({
           creationId: cId
         })
         this.continueCreation()
       } else {
-        //未获取到正确参数，退出
+        //错误
+        console.log("error,no param!!!")
         wx.navigateBack({
           delta: 1
         })
       }
+    } else {
+      //错误
+      console.log("error,no user!!!")
+      wx.navigateBack({
+        delta: 1
+      })
     }
-
   },
 
   /**
