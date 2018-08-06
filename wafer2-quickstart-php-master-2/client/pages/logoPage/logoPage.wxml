@@ -2,7 +2,7 @@
 <view class="container">
     <image style="width: 200px; height: 200px; background-color: #eeeeee;" mode="{{item.mode}}" src="../../img/logo.png"> </image>
     <view class="section__ctn">
-        <text>你接我唱</text>
+        <text>你唱我接</text>
     </view>
 
     <view class="lower_button">

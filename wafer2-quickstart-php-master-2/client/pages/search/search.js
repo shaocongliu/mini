@@ -3,22 +3,8 @@ var searchKey;
 var lastSearchKey;
 var songList = require('../../data/searchData.js').songs;
 var songData;
+var musicDisplay;
 const app = getApp();
-
-
-function toUnicode(theString) {
-  var unicodeString = '';
-  for (var i = 0; i < theString.length; i++) {
-    var theUnicode = theString.charCodeAt(i).toString(16).toUpperCase();
-    while (theUnicode.length < 4) {
-      theUnicode = '0' + theUnicode;
-    }
-    theUnicode = '\\u' + theUnicode;
-    unicodeString += theUnicode;
-  }
-  return unicodeString;
-}
-
 
 Page({
   data: {
@@ -40,7 +26,6 @@ Page({
     this.setData({
       key: lastSearchKey
     });
-
     wx.request({
       url: 'https://www.jemizhang.cn/weapp/getonesong',
       data: {
@@ -53,36 +38,54 @@ Page({
         app.globalData.songInfo = res
         console.log("----------------")
         console.log(app.globalData.songInfo)
+        console.log("----------------")
+        console.log(songList)
+        console.log("----------------")
+        var songID = res.data["song_id"]
+        musicDisplay = {
+          "1": {
+            "musicAddr": res.data["song_url"],
+            "album": {
+              "picAddr": res.data["img_url"],
+              "name": "专辑",
+            },
+            "artist": res.data["singer"],
+            "name": res.data["song_name"]
+          },
+        }
+
+        for (var j = 0; j < 100000; j++) {
+        }
+        var rs = [],
+          idsMap = {},
+          keys = Object.keys(musicDisplay),
+          len = keys.length;
+
+        for (var i = 0; i < len; i++) {
+          var k = keys[i];
+
+          rs.push(Object.assign({
+            id: k,
+          }, musicDisplay[k]));
+
+          idsMap[k] = {
+            preid: i > 0 ? keys[i - 1] : 0,
+            nextid: i < len - 1 ? keys[i + 1] : 0
+          }
+        }
+
+        idsMap[keys[0]].preid = keys[len - 1];
+        idsMap[keys[len - 1]].nextid = keys[0];
+
+        console.log("------------------");
+        console.log(rs);
+
+        that.setData({
+          searchMusic: rs
+        });
       }
     })
-
-    var rs = [],
-      idsMap = {},
-      keys = Object.keys(songList),
-      len = keys.length;
-
-    for (var i = 0; i < len; i++) {
-      var k = keys[i];
-
-      rs.push(Object.assign({
-        id: k,
-      }, songList[k]));
-
-      idsMap[k] = {
-        preid: i > 0 ? keys[i - 1] : 0,
-        nextid: i < len - 1 ? keys[i + 1] : 0
-      }
-    }
-
-    idsMap[keys[0]].preid = keys[len - 1];
-    idsMap[keys[len - 1]].nextid = keys[0];
-
-    this.setData({
-      searchMusic: rs
-    });
   },
-
-
 
   bindViewTap: function () {
     wx.navigateTo({
