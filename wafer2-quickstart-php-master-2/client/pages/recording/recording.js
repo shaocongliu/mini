@@ -8,10 +8,13 @@ const App = getApp()
 const SERVER_URL = "https://www.jemizhang.cn/weapp/"
 const REQUIRE_USER = "Senduserinfo"
 const REQUIRE_SONG = "Getonesong"
-const INIT_SONG = "Sendsonginfo"
+const INIT_SONG = "Createsingsong"
 const REQUIRE_STATE = "Getsongstate"
+const REQUIRE_FOLLOW = "xxx"
+const CHANGE_STATE = "Changesongstate"
 const REQUIRE_DONE = "Getdonesong"
 const UPLOAD_FRAME = "Sendsong"
+const UPLOAD_SONG = "Upload"
 
 
 const options = {
@@ -59,6 +62,7 @@ Page({
     musicId: "",
     creationId: "",
     openId: "",
+    winnerId: ""
   },
   /**
    * 重置创作状态
@@ -200,16 +204,33 @@ Page({
     })
   },
   checkCreationStatus: function(data) {
-    let status = 2
-    let t = this
-    console.log("status code =>" + status)
-    switch (status) {
-      case 0:
+    let isDone = data.isdone //是否完成
+    let isSinging = data.singing //正在唱
+    let winnerId = data.who
+    let url = data.url
+    if (parseInt(isDone) == 0) {
+      //未完成
+      if (parseInt(isSinging) == 0) {
+        //无人唱
+        console.log("can sing")
+        wx.request({
+          url: SERVER_URL + REQUIRE_FOLLOW,
+          data: {
+            openid: this.data.openId,
+            singsongid: this.data.creationId
+          },
+          success: function(res) {
+            if (res.data.result == "success") {
+
+            }
+          }
+        })
         this.setData({
           isContinuing: true
         })
-        break
-      case 1:
+      } else {
+        //有人唱
+        console.log("no sing")
         this.setData({
           isLosing: true,
           timingLast: 20
@@ -217,13 +238,16 @@ Page({
         setTimeout(function() {
           t.refreshStatus()
         }, 1000)
-        break
-      case 2:
-        this.setData({
-          canPlay: true
-        })
-        break
+      }
+    } else {
+      //已完成
+      console.log("is done")
+      this.setData({
+        tempSongPath: url,
+        canPlay: true
+      })
     }
+
   },
   refreshStatus: function() {
     let t = this
@@ -243,11 +267,18 @@ Page({
     }
 
   },
+  uploadPieces: function() {
+    wx.uploadFile({
+      url: SERVER_URL + UPLOAD_SONG,
+      filePath: this.data.tempRecordPath,
+      name: this.data.creationId,
+    })
+  },
   /**
    * 启动创作流程
    */
-  luanchCreation: function() {
-    console.log("luanch creation")
+  launchCreation: function() {
+    console.log("launch creation")
     //this.continueCreation()
     //this.requireUser()
     this.requireSong()
@@ -265,11 +296,16 @@ Page({
     wx.request({
       url: SERVER_URL + REQUIRE_STATE,
       data: {
-        singSongId: this.data.creationId,
-        userId: this.data.openId
+        singsongid: this.data.creationId,
+        openid: this.data.openId
       },
       success: function(res) {
-        t.checkCreationStatus(res.data)
+        if (res.data.result == "success") {
+          t.checkCreationStatus(res.data)
+        } else {
+
+        }
+
       },
       fail: function(res) {
         wx.navigateBack({
@@ -293,25 +329,26 @@ Page({
       this.setData({
         tempRecordPath: res.tempFilePath,
       })
+      this.uploadPieces()
     })
-    Recorder.onFrameRecorded((res) => {
+    /* Recorder.onFrameRecorded((res) => {
 
-      console.log("frame record")
-      let t = this
-      let txt = wx.arrayBufferToBase64(res.frameBuffer)
-      this.setData({
+       console.log("frame record")
+       let t = this
+       let txt = wx.arrayBufferToBase64(res.frameBuffer)
+       this.setData({
 
-      })
-      wx.request({
-        url: SERVER_URL + UPLOAD_FRAME,
-        data: {
-          creationId: t.data.creationId,
-          serial: t.data.frameCount,
-          frameContent: txt,
-          isLastFrame: res.isLastFrame
-        }
-      })
-    })
+       })
+       wx.request({
+         url: SERVER_URL + UPLOAD_FRAME,
+         data: {
+           creationId: t.data.creationId,
+           serial: t.data.frameCount,
+           frameContent: txt,
+           isLastFrame: res.isLastFrame
+         }
+       })
+     })*/
 
     SongPlayer.onError(() => {
       console.log("song error")
@@ -360,17 +397,19 @@ Page({
     wx.request({
       url: SERVER_URL + INIT_SONG,
       data: {
-        userId: t.data.openId,
+        openid: t.data.openId,
         songid: t.data.musicId,
-        piece_num: num
+        piece: num
       },
       success: function(res) {
-        t.setData({
-          creationId: res.data.singsongid
-        })
-      },
-      complete: function(res) {
-        
+        let reuslt = res.data.reuslt
+        if (result == "success") {
+          t.setData({
+            creationId: res.data.createflowid
+          })
+        } else {
+
+        }
       }
     })
     t.setData({
@@ -535,7 +574,7 @@ Page({
     this.setData({
       isClosed: false
     })
-
+    console.log(App.globalData.userInfo)
     if (App.globalData.userInfo) {
       this.setData({
         userInfo: App.globalData.userInfo,
@@ -553,7 +592,7 @@ Page({
         this.setData({
           musicId: mId
         })
-        this.luanchCreation()
+        this.launchCreation()
       } else if (status == 1) {
         //接唱流程
         let cId = options.cId
