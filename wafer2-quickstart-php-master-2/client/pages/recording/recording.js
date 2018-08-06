@@ -179,6 +179,7 @@ Page({
         songId: this.data.musicId,
       },
       success: function(res) {
+        
         let range = res.data.lyrics_pieces_info
 
         t.setData({
@@ -503,20 +504,8 @@ Page({
   onClickSave: function(e) {
     this.stopSing()
     this.stopListen()
-    let t = this
-    wx.request({
-      url: '',
-      data: {
-        action: 0
-      },
-      success: function(res) {
-
-      },
-      complete: function(res) {
-        t.setData({
-          //creationStatus: parseInt(res.data.creationStatus)
-        })
-      }
+    wx.navigateTo({
+      url: '../share/share',
     })
 
   },

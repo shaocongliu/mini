@@ -1,0 +1,18 @@
+<!--pages/share/share.wxml-->
+<view class='container'>
+  <view class="background">
+    <image src='../../img/share_background.png' mode='aspectFit' class='background-img'></image>
+   <view class='album'>
+      <image mode='aspectFit' src='{{albumUrl}}'></image>
+    </view> 
+  </view>
+  <view class='msg'>
+    <view class='msg_tab'>
+      <text class='chars'>{{charNum}}/140</text>
+      <image mode='aspectFit' class='smileface' src='../../img/smileface.png'></image>
+    </view>
+    <textarea bindconfirm="onConfirmMsg" value='{{msg}}'></textarea>
+  </view>
+  <button open-type='share' class='sharebtn'></button>
+  <image class='share-img' mode='aspectFit' src='../../img/invatation.png'></image>
+</view>
