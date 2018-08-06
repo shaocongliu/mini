@@ -1,7 +1,7 @@
 <!--pages/recording/recording.wxml-->
 
 <view style="background-image: url('../../img/album.jpg'); " class='container'></view>
-<view class='cover' wx-if='{{canPlay}}'>
+<view class='cover' wx:if='{{canPlay}}'>
   <view class='cover-background'>
     <text class='cover-title'>接唱已经完成！</text>
     <view class='tab'>
@@ -15,15 +15,22 @@
 
 
 
-<view class='cover-background' wx-if='{{isStarting}}'>
-  <picker bindchange="onPickerChange" value="{{songIndex}}" range="{{songRange}}">
-    <view class='singtab'>
-      <text class='cover-title'>挑战人数：</text>
-      <view class='circle-num'>
-        <text>{{songRange[songIndex]}}</text>
+<view class='cover-background' wx:if='{{isStarting}}'>
+
+  <view class='singtab'>
+    <text class='cover-title'>挑战人数</text>
+
+    <picker bindchange="onPickerChange" value="{{songIndex}}" range="{{songRange}}">
+      <view class='adjust-tab'>
+        <view wx:for="{{songRange}}" class="circle-num" style="{{songIndex == index ? 'background:#FF458C' : ''}}">
+          <text>{{item}}</text>
+        </view>
       </view>
-    </view>
-  </picker>
+    </picker>
+
+
+  </view>
+
   <button class='singbtn' bindtap='onClickSing'>
     <text>开始High歌</text>
   </button>
@@ -31,7 +38,7 @@
 
 
 
-<view class='cover-background' wx-if='{{isContinuing}}'>
+<view class='cover-background' wx:if='{{isContinuing}}'>
   <text class='cover-title'>是否接受唱歌挑战</text>
   <view class='tab'>
     <button class='positive leftbtn' bindtap='onClickContinue'>
@@ -45,7 +52,7 @@
 
 
 
-<view class='cover-background' wx-if='{{isLosing}}'>
+<view class='cover-background' wx:if='{{isLosing}}'>
   <view class='tab'>
     <text class='cover-title'>您来晚一步了，</text>
     <image style="width:40px;height:40px;mode='aspectFit';" src='{{songInfo.winnerAvatar}}'></image>
@@ -55,7 +62,7 @@
 </view>
 
 <view class='bottom-tab'>
-  
+
   <image class='record-img' mode='aspectFit' src="{{isRecording?'../../img/recordon.png':'../../img/recordstop.png' }}"></image>
   <button class='img-button' bindtap='onClickAgain'>
     <image mode='aspectFit' src="../../img/resing.png"></image>

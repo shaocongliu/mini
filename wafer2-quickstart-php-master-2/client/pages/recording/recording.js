@@ -595,8 +595,7 @@ Page({
         //发起流程
         let mId = options.mId
         this.setData({
-          musicId: mId,
-          isRecording:true
+          musicId: mId
         })
         this.launchCreation()
       } else if (status == 1) {
