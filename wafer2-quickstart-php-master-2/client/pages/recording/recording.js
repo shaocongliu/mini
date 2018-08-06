@@ -183,7 +183,7 @@ Page({
 
         t.setData({
           tempSongPath: res.data.music_url,
-          //lyrics: currLyrcis,
+          lyrics: currLyrcis,
           songRange: res.data.lyrics_pieces_info.piece_num
         })
       },

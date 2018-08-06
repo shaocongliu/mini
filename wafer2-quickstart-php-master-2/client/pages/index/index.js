@@ -37,7 +37,7 @@ Page({
       }
     } else {
       // 在没有 open-type=getUserInfo 版本的兼容处理
-      wx.getUserInfo({
+      this.bindGetUserInfo({
         success: res => {
           app.globalData.userInfo = res.userInfo
           this.setData({
