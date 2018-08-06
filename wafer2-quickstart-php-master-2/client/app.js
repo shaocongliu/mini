@@ -8,7 +8,8 @@ App({
     },
     
   globalData: {
-    userInfo: null
+    userInfo: null,
+    songInfo: null
   }
 
 })

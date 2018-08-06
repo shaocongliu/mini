@@ -3,6 +3,7 @@ var searchKey;
 var lastSearchKey;
 var songList = require('../../data/searchData.js').songs;
 var songData;
+const app = getApp();
 
 
 function toUnicode(theString) {
@@ -56,7 +57,7 @@ Page({
       }
     })
 
-
+    app.globalData.songInfo = songData;
 
     var rs = [],
       idsMap = {},
