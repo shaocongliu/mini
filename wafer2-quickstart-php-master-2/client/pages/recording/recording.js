@@ -204,10 +204,12 @@ Page({
     })
   },
   checkCreationStatus: function(data) {
+    console.log("data=>"+data)
     let isDone = data.isdone //是否完成
     let isSinging = data.singing //正在唱
     let winnerId = data.who
     let url = data.url
+    console.log("isDone=>" + isDone + " isSinging=>" + isSinging)
     if (parseInt(isDone) == 0) {
       //未完成
       if (parseInt(isSinging) == 0) {
@@ -303,7 +305,10 @@ Page({
         if (res.data.result == "success") {
           t.checkCreationStatus(res.data)
         } else {
-
+          t.checkCreationStatus({
+            isdone: 0,
+            singing: 0
+          })
         }
 
       },
@@ -590,7 +595,8 @@ Page({
         //发起流程
         let mId = options.mId
         this.setData({
-          musicId: mId
+          musicId: mId,
+          isRecording:true
         })
         this.launchCreation()
       } else if (status == 1) {

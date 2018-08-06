@@ -1,6 +1,6 @@
 <!--pages/recording/recording.wxml-->
 
-
+<view style="background-image: url('../../img/album.jpg'); " class='container'></view>
 <view class='cover' wx-if='{{canPlay}}'>
   <view class='cover-background'>
     <text class='cover-title'>接唱已经完成！</text>
@@ -14,52 +14,73 @@
 
 
 
-<view class='cover' wx-if='{{isStarting}}'>
-  <view class='cover-background'>
-    <picker bindchange="onPickerChange" value="{{songIndex}}" range="{{songRange}}">
-      <view class='tab'>
-        <text class='cover-title' style="margin-right:4vw;">挑战人数</text>
-        <text style='color:rgb(255, 0, 0);' class='cover-title'>{{songRange[songIndex]}}</text>
+
+<view class='cover-background' wx-if='{{isStarting}}'>
+  <picker bindchange="onPickerChange" value="{{songIndex}}" range="{{songRange}}">
+    <view class='singtab'>
+      <text class='cover-title'>挑战人数：</text>
+      <view class='circle-num'>
+        <text>{{songRange[songIndex]}}</text>
       </view>
-    </picker>
-    <button class='positive' bindtap='onClickSing'>开始嗨歌</button>
-  </view>
-</view>
-
-<view class='cover' wx-if='{{isContinuing}}'>
-  <view class='cover-background'>
-    <text class='cover-title'>是否接受唱歌挑战</text>
-    <view class='tab'>
-      <button class='positive' bindtap='onClickContinue'>没错</button>
-      <button class='negative' bindtap='onClickQuit'>我怂了</button>
     </view>
+  </picker>
+  <button class='singbtn' bindtap='onClickSing'>
+    <text>开始High歌</text>
+  </button>
+</view>
+
+
+
+<view class='cover-background' wx-if='{{isContinuing}}'>
+  <text class='cover-title'>是否接受唱歌挑战</text>
+  <view class='tab'>
+    <button class='positive leftbtn' bindtap='onClickContinue'>
+      <text>没错</text>
+    </button>
+    <button class='negative rightbtn' bindtap='onClickQuit'>
+      <text>我怂了</text>
+    </button>
   </view>
 </view>
 
-<view class='cover' wx-if='{{isLosing}}'>
-  <view class='cover-background'>
-    <view class='tab'>
-      <text class='cover-title'>您来晚一步了，</text>
-      <image style="width:40px;height:40px;mode='aspectFit';" src='{{songInfo.winnerAvatar}}'></image>
-      <text class='cover-title'>抢到接龙麦</text>
-    </view>
-    <text class='cover-content'>抢麦倒计时 {{timingLast}}s...</text>
+
+
+<view class='cover-background' wx-if='{{isLosing}}'>
+  <view class='tab'>
+    <text class='cover-title'>您来晚一步了，</text>
+    <image style="width:40px;height:40px;mode='aspectFit';" src='{{songInfo.winnerAvatar}}'></image>
+    <text class='cover-title'>抢到接龙麦</text>
   </view>
+  <text class='cover-content'>抢麦倒计时 {{timingLast}}s...</text>
 </view>
 
+<view class='bottom-tab'>
+  
+  <image class='record-img' mode='aspectFit' src="{{isRecording?'../../img/recordon.png':'../../img/recordstop.png' }}"></image>
+  <button class='img-button' bindtap='onClickAgain'>
+    <image mode='aspectFit' src="../../img/resing.png"></image>
+    <text>重唱</text>
+  </button>
+  <button class='img-button' bindtap='onClickSave'>
+    <image mode='aspectFit' src="../../img/finish.png"></image>
+    <text>结束</text>
+  </button>
+</view>
+<!--
 <view class='background' wx:if="{{isSinging}}">
   <view class='tab' wx-if='{{isDone}}'>
     <button class='negative' style='margin-right:20px;' bindtap='onClickListen'>{{isListening?'停止':'试听'}}</button>
     <button class='positive' open-type='share' style='margin-right:20px;' bindtap='onClickSave'>保存并提交</button>
     <button class='negative' style='background:red;' bindtap='onClickAgain'>再唱一次</button>
   </view>
+
   <view class='tab' wx-if='{{!isDone}}'>
     <image style="width:30px;height:30px;mode:'aspectFit';margin-right:20px;" src='{{recorderImage}}'></image>
     <image style="width:30px;height:30px;mode:'aspectFit';" wx-if="{{hasUserInfo}}" src='{{userInfo.avatarUrl}}'></image>
     <text class='content'>{{isRecording ? '正在录制':'请等待'}}</text>
   </view>
 </view>
-
+-->
 <scroll-view class='lyric-wrapper' scroll-y scroll-into-view="line{{toLineNum}}" scroll-with-animation>
   <view wx:key="{{item.time}}" id="line{{index}}" class="text {{(index >= startLine && index <= endLine) ? 'own' : ''}} {{index == currLine ? 'current' : ''}}" wx:for="{{lyrics.lines}}">{{item.txt}}</view>
 </scroll-view>
