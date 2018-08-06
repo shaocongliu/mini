@@ -22,7 +22,6 @@ Page({
   },
 
     bindGetUserInfo: function () {
-    console.log("-------")
     if (this.data.logged) return
 
     util.showBusy('正在登录')
