@@ -5,7 +5,6 @@ var recommentData = require('../../data/recommendData.js').songs;
 Page({
 
   data: {
-    
     slideAddr: [
       "../../img/slide1.jpeg",
       "../../img/slide2.jpeg",
