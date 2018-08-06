@@ -20,15 +20,6 @@ Page({
 
   onLoad: function () {
   },
-  getUserInfo: function (e) {
-    console.log(e)
-    app.globalData.userInfo = e.detail.userInfo
-    this.setData({
-      userInfo: e.detail.userInfo,
-      hasUserInfo: true
-    })
-  },
-
 
     bindGetUserInfo: function () {
     console.log("-------")
@@ -41,6 +32,7 @@ Page({
       qcloud.loginWithCode({
         success: res => {
           this.setData({ userInfo: res, logged: true })
+          app.globalData.userInfo = res
           util.showSuccess('登录成功1')
         },
         fail: err => {
@@ -52,6 +44,7 @@ Page({
       qcloud.login({
         success: res => {
           this.setData({ userInfo: res, logged: true })
+          app.globalData.userInfo = res
           util.showSuccess('登录成功2')
         },
         fail: err => {

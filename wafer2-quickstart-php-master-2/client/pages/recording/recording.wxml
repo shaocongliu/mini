@@ -11,12 +11,7 @@
   </view>
 </view>
 
-
-
-
-
 <view class='cover-background' wx:if='{{isStarting}}'>
-
   <view class='singtab'>
     <text class='cover-title'>挑战人数</text>
 
