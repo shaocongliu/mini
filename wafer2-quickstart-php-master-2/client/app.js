@@ -10,6 +10,7 @@ App({
   globalData: {
     userInfo: null
   }
+
 })
 // App({
 //   onLaunch: function () {

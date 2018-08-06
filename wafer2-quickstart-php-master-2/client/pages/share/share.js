@@ -1,6 +1,3 @@
-
-
-
 // pages/share/share.js
 Page({
 
