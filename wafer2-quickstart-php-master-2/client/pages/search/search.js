@@ -55,39 +55,34 @@ Page({
         console.log(app.globalData.songInfo)
       }
     })
-    // var t = setTimeout(getSongList, 500)
+
+    var rs = [],
+      idsMap = {},
+      keys = Object.keys(songList),
+      len = keys.length;
+
+    for (var i = 0; i < len; i++) {
+      var k = keys[i];
+
+      rs.push(Object.assign({
+        id: k,
+      }, songList[k]));
+
+      idsMap[k] = {
+        preid: i > 0 ? keys[i - 1] : 0,
+        nextid: i < len - 1 ? keys[i + 1] : 0
+      }
+    }
+
+    idsMap[keys[0]].preid = keys[len - 1];
+    idsMap[keys[len - 1]].nextid = keys[0];
+
+    this.setData({
+      searchMusic: rs
+    });
   },
 
-  // getSongList:function () {
 
-  //   console.log("--------------------------")
-  //   console.log(app.globalData.songInfo)
-
-  //   var rs = [],
-  //     idsMap = {},
-  //     keys = Object.keys(songList),
-  //     len = keys.length;
-
-  //   for (var i = 0; i < len; i++) {
-  //     var k = keys[i];
-
-  //     rs.push(Object.assign({
-  //       id: k,
-  //     }, songList[k]));
-
-  //     idsMap[k] = {
-  //       preid: i > 0 ? keys[i - 1] : 0,
-  //       nextid: i < len - 1 ? keys[i + 1] : 0
-  //     }
-  //   }
-
-  //   idsMap[keys[0]].preid = keys[len - 1];
-  //   idsMap[keys[len - 1]].nextid = keys[0];
-
-  //   this.setData({
-  //     searchMusic: rs
-  //   });
-  // },
 
   bindViewTap: function () {
     wx.navigateTo({
