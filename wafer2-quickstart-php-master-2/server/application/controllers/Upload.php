@@ -5,6 +5,8 @@ use \QCloud_WeApp_SDK\Conf as Conf;
 use \QCloud_WeApp_SDK\Cos\CosAPI as Cos;
 use \QCloud_WeApp_SDK\Constants as Constants;
 
+include dirname(__FILE__) . '/../business/ConDB.class.php';
+
 class Upload extends CI_Controller {
     public function index() {
         // 处理文件上传
@@ -14,22 +16,22 @@ class Upload extends CI_Controller {
         ini_set('post_max_size', '10M');
 
         // 限制文件格式，支持图片上传
-        if ($file['type'] !== 'image/jpeg' && $file['type'] !== 'image/png' && $file['type'] !== 'image/jpg') {
-            $this->json([
-                'code' => 1,
-                'data' => '不支持的上传图片类型：' . $file['type']
-            ]);
-            return;
-        }
+//        if ($file['type'] !== 'image/jpeg' && $file['type'] !== 'image/png' && $file['type'] !== 'image/jpg') {
+//            $this->json([
+//                'code' => 1,
+//                'data' => '不支持的上传图片类型：' . $file['type']
+//            ]);
+//            return;
+//        }
         
         // 限制文件大小：5M 以内
-        if ($file['size'] > 5 * 1024 * 1024) {
-            $this->json([
-                'code' => 1,
-                'data' => '上传图片过大，仅支持 5M 以内的图片上传'
-            ]);
-            return;
-        }
+//        if ($file['size'] > 5 * 1024 * 1024) {
+//            $this->json([
+//                'code' => 1,
+//                'data' => '上传图片过大，仅支持 5M 以内的图片上传'
+//            ]);
+//            return;
+//        }
 
         $cosClient = Cos::getInstance();
         $cosConfig = Conf::getCos();
