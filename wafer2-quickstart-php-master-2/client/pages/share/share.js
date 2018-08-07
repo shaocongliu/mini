@@ -77,6 +77,10 @@ Page({
    */
   onShareAppMessage: function() {
     console.log(this.data.creationId)
+
+    wx.redirectTo({
+      url: '/pages/index/index',
+    })
     return {
       title: this.data.msg,
       path: '/pages/recording/recording?cId=' + this.data.creationId,

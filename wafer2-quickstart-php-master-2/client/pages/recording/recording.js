@@ -126,7 +126,6 @@ Page({
   handleLyrics: function(currTime) {
     let lines = this.data.lyrics.lines,
       lineNum = 0
-
     for (let i = 0; i < lines.length; i++) {
       if ((i < 1 && currTime < lines[i].time) ||
         (i >= lines.length - 1 && currTime > lines[i].time)) {
@@ -146,7 +145,6 @@ Page({
       this.setData({
         currLine: lineNum
       })
-
       if (lineNum > 7) {
         this.setData({
           toLineNum: lineNum - 7
@@ -754,14 +752,19 @@ Page({
           wx.navigateTo({
             url: '../share/share?cId=' + t.data.creationId,
           })
-        } else if (res.data.isdone == 1) {
-          wx.navigateBack({
-            delta: 2
+        } else {
+          wx.showToast({
+            title: '接唱完成！',
+            icon: 'success',
+            duration: 2000
+          })
+          console.log("save->quit")
+          wx.redirectTo({
+            url: '/pages/index/index',
           })
         }
       }
     })
-
 
   },
   /**
@@ -810,8 +813,9 @@ Page({
     this.startSing()
   },
   onClickQuit: function(e) {
-    wx.navigateBack({
-      delta: 1
+    console.log("quit")
+    wx.redirectTo({
+      url: '/pages/index/index',
     })
   },
   /**
@@ -838,6 +842,7 @@ Page({
       })
       this.initDevice()
       let cId = options.cId
+      let t=this
       if (cId) {
         //接唱流程
         this.setData({
@@ -854,12 +859,15 @@ Page({
       } else {
         //错误
         console.log("error,no param!!!")
-        wx.navigateBack({
-          delta: 1
+        wx.redirectTo({
+          url: '/pages/index/index?cId='+t.data.creationId,
         })
       }
     } else {
-      this.requireUserInfo()
+      //this.requireUserInfo()
+      wx.redirectTo({
+        url: '/pages/index/index?cId=' + t.data.creationId,
+      })
     }
   },
 
@@ -890,7 +898,13 @@ Page({
   onUnload: function() {
     this.stopListen()
     this.stopSing()
-
+    this.resetAllState()
+    this.resetLyrics()
+    this.setData({
+      openId: "",
+      creationId: "",
+      musicId: ""
+    })
     this.setData({
       isClosed: true
     })
