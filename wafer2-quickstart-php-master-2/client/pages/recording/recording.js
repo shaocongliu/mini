@@ -1,6 +1,7 @@
 // pages/recording/recording.js
 const Lyric = require('../../utils/lyric.js')
 const Resources = require("../../utils/resources.js")
+var qcloud = require('../../vendor/wafer2-client-sdk/index')
 const Recorder = wx.getRecorderManager()
 const SongPlayer = wx.createInnerAudioContext()
 const SingPlayer = wx.createInnerAudioContext()
@@ -23,8 +24,7 @@ const options = {
   sampleRate: 44100,
   numberOfChannels: 1,
   encodeBitRate: 192000,
-  format: 'aac',
-  frameSize: 50
+  format: 'mp3'
 }
 
 Page({
@@ -67,7 +67,9 @@ Page({
     musicId: "",
     creationId: "",
     openId: "",
-    winnerId: ""
+    winnerId: "",
+    doneArr: [],
+    playIndex: 0
   },
   /**
    * 重置创作状态
@@ -264,10 +266,52 @@ Page({
     })*/
 
   },
+  requireLyrics: function(url) {
+    let t = this
+    wx.request({
+      url: url,
+      success: function(res) {
+        t.setData({
+          lyrics: new Lyric(res.data)
+        })
+      }
+    })
+  },
   checkCreationStatus: function(data) {
     console.log("data=>" + data)
+    let t = this
+    this.requireLyrics(data.lyric_url)
+    this.setData({
+      albumUrl: data.img_url,
+      tempSongPath: data.song,
+    })
+    this.setData({
+      rangeDetail: JSON.parse(data.lyric_info)
+    })
+    if (data.song_url2) {
+      this.setData({
+        canPlay: true,
+        doneArr: [data.song_url, data.song_url2],
+        startTime: parseFloat(t.data.rangeDetail[0]),
+        endTime: parseFloat(t.data.rangeDetail[6])
+      })
+      console.log(this.data.doneArr)
+    } else {
+      this.setData({
+
+        isContinuing: true,
+        startTime: parseFloat(t.data.rangeDetail[4]),
+        endTime: parseFloat(t.data.rangeDetail[6]),
+        startLine: parseInt(t.data.rangeDetail[5]) + 1,
+        endLine: parseInt(t.data.rangeDetail[7])
+      })
+
+    }
+    /*
     let isDone = data.isdone //是否完成
     let isSinging = data.singing //正在唱
+    isDone = 0
+    isSinging = 0
     let winnerId = data.who
     let url = data.url
     console.log("isDone=>" + isDone + " isSinging=>" + isSinging)
@@ -280,11 +324,20 @@ Page({
           url: SERVER_URL + REQUIRE_FOLLOW,
           data: {
             openid: this.data.openId,
-            singsongid: this.data.creationId
+            create_flow_id: this.data.creationId
           },
           success: function(res) {
+            console.log(res)
             if (res.data.result == "success") {
+              App.globalData.songInfo = res.data
 
+              t.setData({
+                tempSongPath: res.data.song_url,
+                albumUrl: res.data.img_url,
+                musicId: res.data.song_id,
+                winnerId: initiator_id
+              })
+              t.requireLyrics(res.data.lyric_url)
             }
           }
         })
@@ -310,7 +363,7 @@ Page({
         canPlay: true
       })
     }
-
+*/
   },
   refreshStatus: function() {
     let t = this
@@ -343,7 +396,7 @@ Page({
         t.setData({
           tempRecordPath: temp.data.imgUrl
         })
-        
+
       }
     })
   },
@@ -365,22 +418,20 @@ Page({
   continueCreation: function() {
     console.log("continue creation")
     let t = this
+    console.log(t.data.openId)
     //this.requireUser()
     wx.request({
-      url: SERVER_URL + REQUIRE_STATE,
+      url: SERVER_URL + REQUIRE_FOLLOW,
       data: {
-        singsongid: this.data.creationId,
-        openid: this.data.openId
+        create_flow_id: t.data.creationId
       },
       success: function(res) {
-        if (res.data.result == "success") {
-          t.checkCreationStatus(res.data)
-        } else {
-          t.checkCreationStatus({
-            isdone: 0,
-            singing: 0
-          })
-        }
+        console.log(res)
+
+        App.globalData.songInfo = res
+        t.checkCreationStatus(res.data)
+
+
 
       },
       fail: function(res) {
@@ -391,6 +442,54 @@ Page({
       }
     })
 
+  },
+  playDoneMusic: function() {
+    SongPlayer.src = this.data.tempSongPath
+    SongPlayer.seek(this.data.startTime)
+    SingPlayer.src = this.data.doneArr[this.data.playIndex]
+    SongPlayer.play()
+    SingPlayer.play()
+  },
+  stopDoneMusic: function() {
+    SongPlayer.stop()
+    SingPlayer.stop()
+    this.setData({
+      playIndex: 0
+    })
+  },
+  requireUserInfo: function() {
+    util.showBusy('正在登录')
+
+    const session = qcloud.Session.get()
+    if (session) {
+      qcloud.loginWithCode({
+        success: res => {
+          this.setData({
+            hasUserInfo: true
+          })
+          App.globalData.userInfo = res
+          util.showSuccess('登录成功1')
+        },
+        fail: err => {
+          console.error(err)
+          util.showModel('登录错误1', err.message)
+        }
+      })
+    } else {
+      qcloud.login({
+        success: res => {
+          this.setData({
+            hasUserInfo: true
+          })
+          App.globalData.userInfo = res
+          util.showSuccess('登录成功2')
+        },
+        fail: err => {
+          console.error(err)
+          util.showModel('登录错误2', err.message)
+        }
+      })
+    }
   },
   /**
    * 初始化录音、播放设备，设置回调函数
@@ -455,6 +554,23 @@ Page({
     })
     SingPlayer.onEnded(() => {
       console.log("playback end")
+      if (this.data.canPlay && this.data.isPlaying) {
+        if (this.data.playIndex >= 1) {
+          console.log("stop")
+          this.setData({
+            isPlaying: false,
+            playIndex: 0
+          })
+          SongPlayer.stop()
+        } else {
+          console.log("con")
+          this.setData({
+            playIndex: 1
+          })
+          SingPlayer.src = this.data.doneArr[this.data.playIndex]
+          SingPlayer.play()
+        }
+      }
       if (this.data.isListening) {
         this.stopListen()
       }
@@ -503,15 +619,18 @@ Page({
     if (this.data.creationId == "" || this.data.isStarting) {
       console.log(t.data.songInfo.song_id + t.data.openId + t.data.songInfo.song_piece_num)
       wx.request({
-
         url: SERVER_URL + REQUIRE_CREATION,
-        songid: t.data.songInfo.song_id,
-        openid: t.data.openId,
-        piece_num: t.data.songInfo.song_piece_num,
+        data: {
+          openid: t.data.openId,
+          songid: t.data.songInfo.song_id,
+
+          piece_num: t.data.songInfo.song_piece_num,
+        },
         success: function(res) {
+          console.log("Create=>" + res.data)
           if (res.data.result == "success") {
             t.setData({
-              creationId: res.data.crateflowid
+              creationId: res.data.createflowid
             })
           }
         }
@@ -531,8 +650,10 @@ Page({
     let t = this
     wx.request({
       url: SERVER_URL + START_SINGING,
-      singsongid: t.data.creationId,
-      openid: t.data.openId,
+      data: {
+        singsongid: t.data.creationId,
+        openid: t.data.openId,
+      },
       success: function(res) {
         if (res.data.result == "success") {
 
@@ -616,6 +737,7 @@ Page({
    */
   onClickSave: function(e) {
     let t = this
+    console.log("creationId=>" + t.data.creationId)
     wx.request({
       url: SERVER_URL + CHANGE_STATE,
       data: {
@@ -624,15 +746,22 @@ Page({
         piece_num: t.data.singPiece,
         song_url: t.data.tempRecordPath
       },
-      success:function(res){
+      success: function(res) {
         console.log(res)
+        if (res.data.isdone == 0) {
+          t.stopSing()
+          t.stopListen()
+          wx.navigateTo({
+            url: '../share/share?cId=' + t.data.creationId,
+          })
+        } else if (res.data.isdone == 1) {
+          wx.navigateBack({
+            delta: 2
+          })
+        }
       }
     })
-    this.stopSing()
-    this.stopListen()
-    wx.navigateTo({
-      url: '../share/share',
-    })
+
 
   },
   /**
@@ -648,10 +777,12 @@ Page({
   onClickPlay: function(e) {
     //this.startListen()
     if (this.data.isPlaying) {
+      this.stopDoneMusic()
       this.setData({
         isPlaying: false
       })
     } else {
+      this.playDoneMusic()
       this.setData({
         isPlaying: true
       })
@@ -665,8 +796,18 @@ Page({
     this.initSing()
     this.startSing()
   },
+  /**
+   * 点击继续接唱按钮的回调函数
+   */
   onClickContinue: function(e) {
+    this.stopSing()
+    console.log(this.data.startTime)
+    SongPlayer.src = this.data.tempSongPath
+    if (this.data.startTime > 5) {
+      SongPlayer.seek(this.data.startTime - 5)
+    }
 
+    this.startSing()
   },
   onClickQuit: function(e) {
     wx.navigateBack({
@@ -697,19 +838,19 @@ Page({
       })
       this.initDevice()
       let cId = options.cId
-      if (App.globalData.songInfo.data) {
+      if (cId) {
+        //接唱流程
+        this.setData({
+          creationId: cId
+        })
+        this.continueCreation()
+      } else if (App.globalData.songInfo) {
         //发起流程
         this.setData({
           songInfo: App.globalData.songInfo.data,
           musicId: App.globalData.songInfo.data.song_id
         })
         this.launchCreation()
-      } else if (cId) {
-        //接唱流程
-        this.setData({
-          creationId: cId
-        })
-        this.continueCreation()
       } else {
         //错误
         console.log("error,no param!!!")
@@ -718,11 +859,7 @@ Page({
         })
       }
     } else {
-      //错误
-      console.log("error,no user!!!")
-      wx.navigateBack({
-        delta: 1
-      })
+      this.requireUserInfo()
     }
   },
 

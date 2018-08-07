@@ -23,7 +23,7 @@ Page({
    */
   onLoad: function(options) {
     this.setData({
-      creationId: 123,
+      creationId: options.cId,
       msg: App.globalData.userInfo.nickName + '邀请你一起来唱' + App.globalData.songInfo.data.singer + "的" + App.globalData.songInfo.data.song_name + "！"
     })
   },
@@ -76,6 +76,7 @@ Page({
    * 用户点击右上角分享
    */
   onShareAppMessage: function() {
+    console.log(this.data.creationId)
     return {
       title: this.data.msg,
       path: '/pages/recording/recording?cId=' + this.data.creationId,

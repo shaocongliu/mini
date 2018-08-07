@@ -2,7 +2,12 @@
 Page({
 
 
-  bindViewTap: function () {
+  bindViewTap: function() {
+    wx.navigateTo({
+      url: '../recommend/recommend'
+    })
+  },
+  onLoad: function(options) {
     wx.navigateTo({
       url: '../recommend/recommend'
     })

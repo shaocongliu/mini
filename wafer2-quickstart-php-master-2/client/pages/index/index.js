@@ -19,6 +19,7 @@ Page({
   },
 
   onLoad: function () {
+    this.bindGetUserInfo()
   },
 
     bindGetUserInfo: function () {
@@ -33,6 +34,9 @@ Page({
           this.setData({ userInfo: res, logged: true })
           app.globalData.userInfo = res
           util.showSuccess('登录成功1')
+          wx.navigateTo({
+            url: '../logoPage/logoPage'
+          })
         },
         fail: err => {
           console.error(err)
