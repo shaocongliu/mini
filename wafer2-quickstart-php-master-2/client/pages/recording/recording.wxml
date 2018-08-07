@@ -1,15 +1,15 @@
 <!--pages/recording/recording.wxml-->
 
-<view style="background-image: url({{albumUrl}}); " class='container'></view>
-<view class='cover' wx:if='{{canPlay}}'>
-  <view class='cover-background'>
-    <text class='cover-title'>接唱已经完成！</text>
-    <view class='tab'>
+<view style="background-image: url({{albumUrl}});" class='container'></view>
 
-      <button style="{{isPlaying? 'background:red;':'' }}" class='positive' bindtap='onClickPlay'>{{isPlaying? '停止' :'播放完整歌曲'}}</button>
-    </view>
+<view class='cover-background' wx:if='{{canPlay}}' style="{{isPlaying? 'opacity:0.5':''}}">
+  <text class='cover-title'>接唱已经完成！</text>
+  <view class='tab'>
+
+    <button style="{{isPlaying? 'background:red;':'' }}" class='positive' bindtap='onClickPlay'>{{isPlaying? '停止' :'播放完整歌曲'}}</button>
   </view>
 </view>
+
 
 <view class='cover-background' wx:if='{{isStarting}}'>
   <view class='singtab'>
@@ -56,7 +56,7 @@
   <text class='cover-content'>抢麦倒计时 {{timingLast}}s...</text>
 </view>
 
-<view class='bottom-tab'>
+<view class='bottom-tab' wx:if='{{!canPlay}}'>
 
   <image class='record-img' mode='aspectFit' src="{{isRecording?'../../img/recordon.png':'../../img/recordstop.png' }}"></image>
   <button class='img-button' bindtap='onClickAgain'>
